@@ -1,4 +1,7 @@
 #include "client.h"
+#include "utils.h"
+
+
 
 int main(void)
 {
@@ -15,10 +18,12 @@ int main(void)
 	/* ---------------- LOGGING ---------------- */
 
 	logger = iniciar_logger();
+	t_log* logNuevo = log_create("tp0.log", "CLIENTE", 1, LOG_LEVEL_DEBUG);
 
 	// Usando el logger creado previamente
 	// Escribi: "Hola! Soy un log"
-
+	log_debug(logNuevo, "Hola! Soy un log");
+	
 
 	/* ---------------- ARCHIVOS DE CONFIGURACION ---------------- */
 
@@ -27,7 +32,24 @@ int main(void)
 	// Usando el config creado previamente, leemos los valores del config y los 
 	// dejamos en las variables 'ip', 'puerto' y 'valor'
 
+	config = config_create( "cliente.config");
+
+	if (config == NULL) {												//si falla la creacion del config, aborto!
+		printf("Error al abrir el archivo de configuracion\n");
+		abort();
+	}
+	valor = config_get_string_value(config, "CLAVE");
+	ip = config_get_string_value(config, "IP");
+	puerto = config_get_string_value(config, "PUERTO");  				//string para que no sea cambiado en ningun momento del programa, nashe
+
 	// Loggeamos el valor de config
+	log_debug(logNuevo, "El valor de la clave es: %s", valor);   		//uso logNuevo pq es el log que tenia creado antes
+	log_debug(logNuevo, "La ip es: %s", ip);							// %s es para que espere un valor que le paso en el proximo parametro, osea la ip
+	log_debug(logNuevo, "El puerto es: %s", puerto);
+	// No olvides liberar el config antes de continuar
+	config_destroy(config);												//destruyo la config para que no quede ocupando memoria, ya que no la necesito mas
+	log_destroy(logNuevo);												//destruyo el log para que no quede ocupando memoria, ya que no la necesito mas
+
 
 
 	/* ---------------- LEER DE CONSOLA ---------------- */
